@@ -1,9 +1,9 @@
 - 👋 Hi, I’m @himesh-mehta
 - 👀 I’m interested in web development
-- 🌱 I’m currently learning python and how to develop games
+- 🌱 I’m currently learning python 
 - 📫 How to reach me dm on instagram or telegram
 - 😄 Pronouns: He/Him
-- ⚡ Fun fact: Not mastered anything yet
+
 
 <!---
 himesh-mehta/himesh-mehta is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
