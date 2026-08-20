@@ -7,37 +7,39 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH, HEIGHT = 1200, 350
 FPS = 15
 TOTAL_FRAMES = 90  # 6 seconds loop at 15 fps
-OUTPUT_PATH = "assets/hero-animated-v2.gif"
+OUTPUT_PATHS = ["assets/hero-animated-v2.gif", "assets/hero-animated.gif"]
 
-# Ensure output directory
 os.makedirs("assets", exist_ok=True)
+os.makedirs("fonts", exist_ok=True)
 
 def get_fonts():
-    # Exact requested sizes:
-    # HIMESH MEHTA: 34–36 px
-    # BUILDING INTELLIGENT SYSTEMS: 15–17 px
-    # AI / ML · FULL STACK · AGENTIC SYSTEMS: 11–13 px
-    name_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 36)
-    sub1_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 16)
-    sub2_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 12)
-    mono_font = ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 11)
-    return name_font, sub1_font, sub2_font, mono_font
+    # Load downloaded Space Grotesk, Inter, and JetBrains Mono fonts
+    space_path = "fonts/SpaceGrotesk-Bold.ttf"
+    inter_path = "fonts/Inter-Medium.ttf"
+    mono_path = "fonts/JetBrainsMono-Regular.ttf"
 
-NAME_FONT, SUB1_FONT, SUB2_FONT, MONO_FONT = get_fonts()
+    name_font = ImageFont.truetype(space_path, 50) if os.path.exists(space_path) else ImageFont.truetype("C:/Windows/Fonts/segoeuib.ttf", 50)
+    sub1_font = ImageFont.truetype(inter_path, 20) if os.path.exists(inter_path) else ImageFont.truetype("C:/Windows/Fonts/segoeui.ttf", 20)
+    sub2_font = ImageFont.truetype(mono_path, 11) if os.path.exists(mono_path) else ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 11)
+    hud_font = ImageFont.truetype(mono_path, 10) if os.path.exists(mono_path) else ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 10)
+
+    return name_font, sub1_font, sub2_font, hud_font
+
+NAME_FONT, SUB1_FONT, SUB2_FONT, HUD_FONT = get_fonts()
 
 # Fixed seed for deterministic particle trajectories & nodes
 random.seed(42)
 
-# Generate Neural Network Nodes around left and right edges (Framing sides, leaving center 100% clean)
+# Generate Neural Network Nodes around left and right edges (Framing edges, leaving center 100% clean)
 LEFT_NODES = []
 for _ in range(10):
-    x = random.randint(35, 200)
+    x = random.randint(35, 190)
     y = random.randint(35, HEIGHT - 35)
     LEFT_NODES.append((x, y))
 
 RIGHT_NODES = []
 for _ in range(10):
-    x = random.randint(WIDTH - 200, WIDTH - 35)
+    x = random.randint(WIDTH - 190, WIDTH - 35)
     y = random.randint(35, HEIGHT - 35)
     RIGHT_NODES.append((x, y))
 
@@ -62,16 +64,16 @@ CIRCUIT_LINES = [
 ]
 
 def render_frame(f_idx):
-    # Pure dark cyber background - absolutely no background shape, oval, pill, or blob
+    # Pure dark cyber background - ZERO background shapes, ZERO blue ovals
     img = Image.new("RGBA", (WIDTH, HEIGHT), (6, 8, 15, 255))
     draw = ImageDraw.Draw(img)
 
     t = f_idx / TOTAL_FRAMES
 
-    # 1. Subtle Cyber Grid lines on far outer flanks only
+    # 1. Subtle Cyber Grid lines on outer flanks only
     grid_alpha = int(14 + 6 * math.sin(t * math.pi * 2))
     for gx in range(0, WIDTH + 60, 60):
-        if gx < 220 or gx > WIDTH - 220:
+        if gx < 210 or gx > WIDTH - 210:
             draw.line([(gx, 0), (gx, HEIGHT)], fill=(0, 180, 255, int(grid_alpha * 0.4)), width=1)
     
     for gy in [40, 80, HEIGHT - 80, HEIGHT - 40]:
@@ -96,7 +98,7 @@ def render_frame(f_idx):
         draw.ellipse([px - 1.2, py - 1.2, px + 1.2, py + 1.2], fill=(180, 240, 255, 180))
 
     # 3. Neural Network Nodes on left & right flanks (Framing edges)
-    all_nodes = [(LEFT_NODES, (35, 200)), (RIGHT_NODES, (WIDTH - 200, WIDTH - 35))]
+    all_nodes = [(LEFT_NODES, (35, 190)), (RIGHT_NODES, (WIDTH - 190, WIDTH - 35))]
     node_activate_prog = min(1.0, max(0.0, (f_idx - 10) / 25.0))
     if node_activate_prog > 0:
         for node_group, _ in all_nodes:
@@ -120,20 +122,20 @@ def render_frame(f_idx):
     for p in PARTICLES:
         px = (p['x'] + math.cos(p['angle']) * f_idx * p['speed']) % WIDTH
         py = (p['y'] + math.sin(p['angle']) * f_idx * p['speed']) % HEIGHT
-        p_alpha = int(70 + 50 * math.sin(f_idx * 0.1 + p['x']))
+        p_alpha = int(60 + 40 * math.sin(f_idx * 0.1 + p['x']))
         p_col = (140, 230, 255, p_alpha) if p['cyan_bias'] > 0.4 else (190, 140, 255, p_alpha)
         draw.ellipse([px - p['size'], py - p['size'], px + p['size'], py + p['size']], fill=p_col)
 
-    # 5. Technical Interface Metadata (Top corners HUD)
+    # 5. Technical Interface Metadata (Top corners HUD in JetBrains Mono)
     if f_idx >= 5:
-        hud_alpha = min(160, int((f_idx - 5) * 15))
+        hud_alpha = min(150, int((f_idx - 5) * 14))
         hud_lines_left = [
             "SYS_CORE // 01.AI.NEURAL",
             "STATUS   // ONLINE · OPTIMIZED",
             f"FRAME_SEQ // {f_idx:03d} / 090"
         ]
         for idx, line in enumerate(hud_lines_left):
-            draw.text((35, 35 + idx * 14), line, font=MONO_FONT, fill=(0, 220, 255, int(hud_alpha * 0.85)))
+            draw.text((35, 35 + idx * 14), line, font=HUD_FONT, fill=(0, 220, 255, int(hud_alpha * 0.85)))
 
         hud_lines_right = [
             "LATENCY // 1.2ms [ZERO_LOSS]",
@@ -141,65 +143,73 @@ def render_frame(f_idx):
             "MODEL   // HYPER_CONVERGENCE"
         ]
         for idx, line in enumerate(hud_lines_right):
-            bbox = draw.textbbox((0, 0), line, font=MONO_FONT)
+            bbox = draw.textbbox((0, 0), line, font=HUD_FONT)
             tw = bbox[2] - bbox[0]
-            draw.text((WIDTH - 35 - tw, 35 + idx * 14), line, font=MONO_FONT, fill=(170, 180, 240, int(hud_alpha * 0.85)))
+            draw.text((WIDTH - 35 - tw, 35 + idx * 14), line, font=HUD_FONT, fill=(170, 180, 240, int(hud_alpha * 0.85)))
 
-    # 6. TYPOGRAPHY ANIMATION & RENDERING
-    # Clean, perfectly centered, compact sizing with ample negative space
+    # 6. TYPOGRAPHY SYSTEM (Space Grotesk + Inter + JetBrains Mono)
+    # Master Group Centering around Visual Center (Height = 350)
     
-    # --- Primary Title: "HIMESH MEHTA" (36px) ---
+    # Calculate text bounding boxes
     name_str = "HIMESH MEHTA"
-    bbox_name = draw.textbbox((0, 0), name_str, font=NAME_FONT)
-    name_w = bbox_name[2] - bbox_name[0]
-    name_h = bbox_name[3] - bbox_name[1]
-    name_x = (WIDTH - name_w) // 2
-    name_y = 115
+    sub1_str = "BUILDING INTELLIGENT SYSTEMS"
+    sub2_str = "AI / ML · FULL STACK · AGENTIC SYSTEMS"
 
-    if f_idx >= 20:
-        name_prog = min(1.0, (f_idx - 20) / 16.0)
-        is_glitching = (20 <= f_idx <= 26 and f_idx % 2 == 0)
+    bbox_name = draw.textbbox((0, 0), name_str, font=NAME_FONT)
+    name_w, name_h = bbox_name[2] - bbox_name[0], bbox_name[3] - bbox_name[1]
+
+    bbox_sub1 = draw.textbbox((0, 0), sub1_str, font=SUB1_FONT)
+    sub1_w, sub1_h = bbox_sub1[2] - bbox_sub1[0], bbox_sub1[3] - bbox_sub1[1]
+
+    bbox_sub2 = draw.textbbox((0, 0), sub2_str, font=SUB2_FONT)
+    sub2_w, sub2_h = bbox_sub2[2] - bbox_sub2[0], bbox_sub2[3] - bbox_sub2[1]
+
+    gap1 = 10  # 10px below name
+    gap2 = 12  # 12px below tagline
+    total_group_h = name_h + gap1 + sub1_h + gap2 + sub2_h
+    start_y = (HEIGHT - total_group_h) // 2
+
+    name_x = (WIDTH - name_w) // 2
+    name_y = start_y
+
+    sub1_x = (WIDTH - sub1_w) // 2
+    sub1_y = name_y + name_h + gap1
+
+    sub2_x = (WIDTH - sub2_w) // 2
+    sub2_y = sub1_y + sub1_h + gap2
+
+    # --- Line 1: HIMESH MEHTA (Space Grotesk Bold 50px) ---
+    if f_idx >= 18:
+        name_prog = min(1.0, (f_idx - 18) / 16.0)
+        is_glitching = (18 <= f_idx <= 24 and f_idx % 2 == 0)
         disp_x = random.randint(-2, 2) if is_glitching else 0
         disp_y = random.randint(-1, 1) if is_glitching else 0
 
-        # Draw Clean Pure White Title
-        draw.text((name_x + disp_x, name_y + disp_y), name_str, font=NAME_FONT, fill=(255, 255, 255, int(255 * name_prog)))
+        # Draw Near-White crisp Space Grotesk Title
+        draw.text((name_x + disp_x, name_y + disp_y), name_str, font=NAME_FONT, fill=(248, 250, 252, int(255 * name_prog)))
 
-        # Clean subtle light sweep across title
-        if 32 <= f_idx <= 55:
-            sweep_p = (f_idx - 32) / 23.0
+        # Clean subtle cyan/white light sweep across title
+        if 32 <= f_idx <= 54:
+            sweep_p = (f_idx - 32) / 22.0
             sweep_x = name_x - 20 + int((name_w + 40) * sweep_p)
-            draw.line([(sweep_x - 5, name_y - 3), (sweep_x + 5, name_y + name_h + 5)], 
+            draw.line([(sweep_x - 6, name_y - 2), (sweep_x + 6, name_y + name_h + 4)], 
                       fill=(255, 255, 255, int(130 * math.sin(sweep_p * math.pi))), width=1)
 
-    # --- Subtitle 1: "BUILDING INTELLIGENT SYSTEMS" (16px) ---
-    sub1_str = "BUILDING INTELLIGENT SYSTEMS"
-    bbox_sub1 = draw.textbbox((0, 0), sub1_str, font=SUB1_FONT)
-    sub1_w = bbox_sub1[2] - bbox_sub1[0]
-    sub1_h = bbox_sub1[3] - bbox_sub1[1]
-    sub1_x = (WIDTH - sub1_w) // 2
-    sub1_y = name_y + name_h + 16
-
-    if f_idx >= 34:
-        sub1_prog = min(1.0, (f_idx - 34) / 14.0)
+    # --- Line 2: BUILDING INTELLIGENT SYSTEMS (Inter Medium 20px) ---
+    if f_idx >= 32:
+        sub1_prog = min(1.0, (f_idx - 32) / 14.0)
         y_offset = int((1.0 - sub1_prog) * 6)
-        draw.text((sub1_x, sub1_y + y_offset), sub1_str, font=SUB1_FONT, fill=(220, 230, 245, int(245 * sub1_prog)))
+        draw.text((sub1_x, sub1_y + y_offset), sub1_str, font=SUB1_FONT, fill=(240, 244, 250, int(245 * sub1_prog)))
 
-    # --- Subtitle 2: "AI / ML · FULL STACK · AGENTIC SYSTEMS" (12px) ---
-    sub2_str = "AI / ML · FULL STACK · AGENTIC SYSTEMS"
-    bbox_sub2 = draw.textbbox((0, 0), sub2_str, font=SUB2_FONT)
-    sub2_w = bbox_sub2[2] - bbox_sub2[0]
-    sub2_x = (WIDTH - sub2_w) // 2
-    sub2_y = sub1_y + sub1_h + 12
-
-    if f_idx >= 44:
-        sub2_prog = min(1.0, (f_idx - 44) / 14.0)
+    # --- Line 3: AI / ML · FULL STACK · AGENTIC SYSTEMS (JetBrains Mono 11px) ---
+    if f_idx >= 42:
+        sub2_prog = min(1.0, (f_idx - 42) / 14.0)
         y_offset = int((1.0 - sub2_prog) * 5)
-        draw.text((sub2_x, sub2_y + y_offset), sub2_str, font=SUB2_FONT, fill=(160, 180, 210, int(220 * sub2_prog)))
+        draw.text((sub2_x, sub2_y + y_offset), sub2_str, font=SUB2_FONT, fill=(140, 185, 220, int(220 * sub2_prog)))
 
     # 7. Corner Cyber Brackets
-    bracket_len = 25
-    bracket_alpha = min(150, int(f_idx * 6))
+    bracket_len = 24
+    bracket_alpha = min(140, int(f_idx * 5))
     b_col = (0, 190, 255, bracket_alpha)
     draw.line([(20, 20), (20 + bracket_len, 20)], fill=b_col, width=2)
     draw.line([(20, 20), (20, 20 + bracket_len)], fill=b_col, width=2)
@@ -211,9 +221,9 @@ def render_frame(f_idx):
     draw.line([(WIDTH - 20, HEIGHT - 20), (WIDTH - 20, HEIGHT - 20 - bracket_len)], fill=b_col, width=2)
 
     # 8. Bottom Progress Line
-    draw.line([(0, HEIGHT - 2), (WIDTH, HEIGHT - 2)], fill=(0, 170, 255, 60), width=2)
+    draw.line([(0, HEIGHT - 2), (WIDTH, HEIGHT - 2)], fill=(0, 170, 255, 55), width=2)
     scan_dot_x = int((f_idx / TOTAL_FRAMES) * WIDTH)
-    draw.line([(scan_dot_x - 15, HEIGHT - 2), (scan_dot_x + 15, HEIGHT - 2)], fill=(255, 255, 255, 200), width=2)
+    draw.line([(scan_dot_x - 15, HEIGHT - 2), (scan_dot_x + 15, HEIGHT - 2)], fill=(255, 255, 255, 190), width=2)
 
     # 9. Seamless Loop Fade
     if f_idx >= 80:
@@ -229,13 +239,13 @@ def render_frame(f_idx):
 
     return img.convert("RGB")
 
-print("Rendering high quality animation sequence hero-animated-v2.gif...")
+print("Rendering high quality animation sequence with Space Grotesk + Inter + JetBrains Mono...")
 frames = []
 for i in range(TOTAL_FRAMES):
     frames.append(render_frame(i))
 
-print("Exporting optimized GIF to hero-animated-v2.gif and hero-animated.gif...")
-for path in ["assets/hero-animated-v2.gif", "assets/hero-animated.gif"]:
+print("Exporting optimized GIF...")
+for path in OUTPUT_PATHS:
     frames[0].save(
         path,
         save_all=True,
