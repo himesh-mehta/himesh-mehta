@@ -63,19 +63,28 @@ def draw_frame(frame_idx):
         if p[1] <= 0 or p[1] >= height:
             p[3] = -p[3]
         d.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=particle_color)
-    # Text animation: main text moves up
-    w_main, h_main = font.getsize(main_text)
-    w_sec, h_sec = small_font.getsize(secondary_text)
-    w_ter, h_ter = small_font.getsize(tertiary_text)
-    # Main text starts below the image and moves up
-    main_start_y = height + 50
-    main_y = max(0, main_start_y - frame_idx * 5)
+    # Text animation: main text positioning
+    bbox_main = d.textbbox((0, 0), main_text, font=font)
+    w_main, h_main = bbox_main[2] - bbox_main[0], bbox_main[3] - bbox_main[1]
+    
+    bbox_sec = d.textbbox((0, 0), secondary_text, font=small_font)
+    w_sec, h_sec = bbox_sec[2] - bbox_sec[0], bbox_sec[3] - bbox_sec[1]
+    
+    bbox_ter = d.textbbox((0, 0), tertiary_text, font=small_font)
+    w_ter, h_ter = bbox_ter[2] - bbox_ter[0], bbox_ter[3] - bbox_ter[1]
+
+    # Center and smooth entry animation
+    target_main_y = (height - (h_main + h_sec + h_ter + 40)) // 2
+    progress = min(1.0, (frame_idx + 1) / (frames * 0.4))
+    main_y = int(target_main_y + (1.0 - progress) * 60)
     main_x = (width - w_main) // 2
     d.text((main_x, main_y), main_text, font=font, fill=text_color)
+    
     # Secondary text
-    sec_y = main_y + h_main + 30
+    sec_y = main_y + h_main + 20
     sec_x = (width - w_sec) // 2
     d.text((sec_x, sec_y), secondary_text, font=small_font, fill=text_color)
+    
     # Tertiary text
     ter_y = sec_y + h_sec + 10
     ter_x = (width - w_ter) // 2
