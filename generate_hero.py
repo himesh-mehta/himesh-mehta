@@ -13,7 +13,6 @@ os.makedirs("assets", exist_ok=True)
 os.makedirs("fonts", exist_ok=True)
 
 def get_fonts():
-    # Strong, perfectly readable typography
     space_path = "fonts/SpaceGrotesk-Bold.ttf"
     inter_path = "fonts/Inter-Medium.otf" if os.path.exists("fonts/Inter-Medium.otf") else "fonts/Inter-Medium.ttf"
     mono_path = "fonts/JetBrainsMono-Regular.ttf"
@@ -55,39 +54,13 @@ for _ in range(20):
         'cyan_bias': random.random()
     })
 
-# Circuit / Data Bus lines on top & bottom borders (Cleanly away from center text)
+# Circuit / Data Bus lines on top & bottom borders
 CIRCUIT_LINES = [
     (50, 25, 160, 25, 180, 45, 260, 45),
     (WIDTH - 50, 25, WIDTH - 160, 25, WIDTH - 180, 45, WIDTH - 260, 45),
     (50, HEIGHT - 25, 140, HEIGHT - 25, 160, HEIGHT - 45, 240, HEIGHT - 45),
     (WIDTH - 50, HEIGHT - 25, WIDTH - 140, HEIGHT - 25, WIDTH - 160, HEIGHT - 45, WIDTH - 240, HEIGHT - 45),
 ]
-
-def draw_spaced_text(draw, x, y, text, font, fill, letter_spacing=0):
-    """Draw text with custom letter-spacing (tracking)."""
-    if letter_spacing == 0:
-        draw.text((x, y), text, font=font, fill=fill)
-        return
-    curr_x = x
-    for char in text:
-        draw.text((curr_x, y), char, font=font, fill=fill)
-        bbox = draw.textbbox((0, 0), char, font=font)
-        char_w = bbox[2] - bbox[0]
-        curr_x += char_w + letter_spacing
-
-def measure_spaced_text(draw, text, font, letter_spacing=0):
-    """Calculate width and height of text with custom letter-spacing."""
-    bbox = draw.textbbox((0, 0), text, font=font)
-    h = bbox[3] - bbox[1]
-    if letter_spacing == 0:
-        return bbox[2] - bbox[0], h
-    total_w = 0
-    for i, char in enumerate(text):
-        c_bbox = draw.textbbox((0, 0), char, font=font)
-        total_w += (c_bbox[2] - c_bbox[0])
-        if i < len(text) - 1:
-            total_w += letter_spacing
-    return total_w, h
 
 def render_frame(f_idx):
     # Pure dark background (NO blue oval, NO background shape)
@@ -175,53 +148,64 @@ def render_frame(f_idx):
             tw = bbox[2] - bbox[0]
             draw.text((WIDTH - 35 - tw, 35 + idx * 14), line, font=HUD_FONT, fill=(170, 180, 240, int(hud_alpha * 0.75)))
 
-    # 6. REFINED TYPOGRAPHY SYSTEM (Clean, crisp, NO crossing lines/glitches)
+    # 6. EXACT VISUAL BOUNDING-BOX POSITIONING (Proper non-overlapping vertical breathing room)
     name_str = "HIMESH MEHTA"
     sub1_str = "BUILDING INTELLIGENT SYSTEMS"
     sub2_str = "AI / ML · FULL STACK · AGENTIC SYSTEMS"
 
-    name_spacing = -1
-    sub1_spacing = 0.5
-    sub2_spacing = 0.8
+    # Measure exact visual ink boundaries
+    bb_n = draw.textbbox((0, 0), name_str, font=NAME_FONT)
+    name_vis_h = bb_n[3] - bb_n[1]
+    name_vis_w = bb_n[2] - bb_n[0]
 
-    name_w, name_h = measure_spaced_text(draw, name_str, NAME_FONT, name_spacing)
-    sub1_w, sub1_h = measure_spaced_text(draw, sub1_str, SUB1_FONT, sub1_spacing)
-    sub2_w, sub2_h = measure_spaced_text(draw, sub2_str, SUB2_FONT, sub2_spacing)
+    bb_s1 = draw.textbbox((0, 0), sub1_str, font=SUB1_FONT)
+    sub1_vis_h = bb_s1[3] - bb_s1[1]
+    sub1_vis_w = bb_s1[2] - bb_s1[0]
 
-    # Clean vertical breathing room: 10px below name, 11px below tagline
-    gap1 = 11
-    gap2 = 12
-    total_group_h = name_h + gap1 + sub1_h + gap2 + sub2_h
-    start_y = (HEIGHT - total_group_h) // 2
+    bb_s2 = draw.textbbox((0, 0), sub2_str, font=SUB2_FONT)
+    sub2_vis_h = bb_s2[3] - bb_s2[1]
+    sub2_vis_w = bb_s2[2] - bb_s2[0]
 
-    name_x = (WIDTH - name_w) // 2
-    name_y = start_y
+    # Explicit vertical gaps between visual edges
+    GAP1 = 18  # 18px gap between bottom edge of HIMESH MEHTA and top edge of BUILDING INTELLIGENT SYSTEMS
+    GAP2 = 14  # 14px gap between bottom edge of tagline and top edge of technical line
 
-    sub1_x = (WIDTH - sub1_w) // 2
-    sub1_y = name_y + name_h + gap1
+    total_group_h = name_vis_h + GAP1 + sub1_vis_h + GAP2 + sub2_vis_h
+    top_y = (HEIGHT - total_group_h) // 2
 
-    sub2_x = (WIDTH - sub2_w) // 2
-    sub2_y = sub1_y + sub1_h + gap2
+    # Exact drawing Y coordinates (accounting for internal font top-bearing offset)
+    name_y = top_y - bb_n[1]
+    name_bottom = top_y + name_vis_h
 
-    # --- Line 1: HIMESH MEHTA (Space Grotesk Bold 60px, #F5F7FA, NO line crossing) ---
+    sub1_top = name_bottom + GAP1
+    sub1_y = sub1_top - bb_s1[1]
+    sub1_bottom = sub1_top + sub1_vis_h
+
+    sub2_top = sub1_bottom + GAP2
+    sub2_y = sub2_top - bb_s2[1]
+
+    # Exact horizontal center
+    name_x = (WIDTH - name_vis_w) // 2 - bb_n[0]
+    sub1_x = (WIDTH - sub1_vis_w) // 2 - bb_s1[0]
+    sub2_x = (WIDTH - sub2_vis_w) // 2 - bb_s2[0]
+
+    # --- Line 1: HIMESH MEHTA (Fade in, fixed Y coordinate throughout) ---
     if f_idx >= 16:
         name_prog = min(1.0, (f_idx - 16) / 16.0)
-        draw_spaced_text(draw, name_x, name_y, name_str, NAME_FONT, 
-                         (245, 247, 250, int(255 * name_prog)), name_spacing)
+        draw.text((name_x, name_y), name_str, font=NAME_FONT, 
+                  fill=(245, 247, 250, int(255 * name_prog)))
 
-    # --- Line 2: BUILDING INTELLIGENT SYSTEMS (Inter Medium 21px, Near-White) ---
+    # --- Line 2: BUILDING INTELLIGENT SYSTEMS (Fade in, fixed Y coordinate throughout) ---
     if f_idx >= 30:
         sub1_prog = min(1.0, (f_idx - 30) / 14.0)
-        y_offset = int((1.0 - sub1_prog) * 6)
-        draw_spaced_text(draw, sub1_x, sub1_y + y_offset, sub1_str, SUB1_FONT, 
-                         (235, 240, 248, int(245 * sub1_prog)), sub1_spacing)
+        draw.text((sub1_x, sub1_y), sub1_str, font=SUB1_FONT, 
+                  fill=(235, 240, 248, int(245 * sub1_prog)))
 
-    # --- Line 3: AI / ML · FULL STACK · AGENTIC SYSTEMS (JetBrains Mono 12px, Muted Cyan) ---
+    # --- Line 3: AI / ML · FULL STACK · AGENTIC SYSTEMS (Fade in, fixed Y coordinate throughout) ---
     if f_idx >= 40:
         sub2_prog = min(1.0, (f_idx - 40) / 14.0)
-        y_offset = int((1.0 - sub2_prog) * 5)
-        draw_spaced_text(draw, sub2_x, sub2_y + y_offset, sub2_str, SUB2_FONT, 
-                         (135, 175, 210, int(215 * sub2_prog)), sub2_spacing)
+        draw.text((sub2_x, sub2_y), sub2_str, font=SUB2_FONT, 
+                  fill=(135, 175, 210, int(215 * sub2_prog)))
 
     # 7. Corner Cyber Brackets
     bracket_len = 22
@@ -255,7 +239,7 @@ def render_frame(f_idx):
 
     return img.convert("RGB")
 
-print("Rendering clean typography hero GIF without sweep/glitch lines...")
+print("Rendering hero GIF with true bounding box spacing...")
 frames = []
 for i in range(TOTAL_FRAMES):
     frames.append(render_frame(i))
