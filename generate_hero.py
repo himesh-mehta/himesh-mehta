@@ -13,8 +13,9 @@ os.makedirs("assets", exist_ok=True)
 os.makedirs("fonts", exist_ok=True)
 
 def get_fonts():
+    # Use static pre-compiled bold/medium binaries (NOT variable font files)
     space_path = "fonts/SpaceGrotesk-Bold.ttf"
-    inter_path = "fonts/Inter-Medium.ttf"
+    inter_path = "fonts/Inter-Medium.otf" if os.path.exists("fonts/Inter-Medium.otf") else "fonts/Inter-Medium.ttf"
     mono_path = "fonts/JetBrainsMono-Regular.ttf"
 
     name_font = ImageFont.truetype(space_path, 54)
@@ -95,7 +96,7 @@ def render_frame(f_idx):
 
     t = f_idx / TOTAL_FRAMES
 
-    # 1. Subtle Cyber Grid lines on outer flanks (reduced opacity by 25%)
+    # 1. Subtle Cyber Grid lines on outer flanks
     grid_alpha = int(10 + 4 * math.sin(t * math.pi * 2))
     for gx in range(0, WIDTH + 60, 60):
         if gx < 200 or gx > WIDTH - 200:
@@ -122,7 +123,7 @@ def render_frame(f_idx):
             py = y3 + (y4 - y3) * p_sub
         draw.ellipse([px - 1.0, py - 1.0, px + 1.0, py + 1.0], fill=(180, 240, 255, 140))
 
-    # 3. Neural Network Nodes on left & right flanks (25% reduced brightness for zero title competition)
+    # 3. Neural Network Nodes on left & right flanks (Dimmed to keep text dominant)
     all_nodes = [(LEFT_NODES, (35, 180)), (RIGHT_NODES, (WIDTH - 180, WIDTH - 35))]
     node_activate_prog = min(1.0, max(0.0, (f_idx - 10) / 25.0))
     if node_activate_prog > 0:
@@ -143,7 +144,7 @@ def render_frame(f_idx):
                 draw.ellipse([n1[0] - n_rad, n1[1] - n_rad, n1[0] + n_rad, n1[1] + n_rad], 
                              fill=(200, 245, 255, n_alpha))
 
-    # 4. Floating Cyber Ambient Micro Dust (Subtle)
+    # 4. Floating Cyber Ambient Micro Dust
     for p in PARTICLES:
         px = (p['x'] + math.cos(p['angle']) * f_idx * p['speed']) % WIDTH
         py = (p['y'] + math.sin(p['angle']) * f_idx * p['speed']) % HEIGHT
@@ -151,7 +152,7 @@ def render_frame(f_idx):
         p_col = (140, 230, 255, p_alpha) if p['cyan_bias'] > 0.4 else (190, 140, 255, p_alpha)
         draw.ellipse([px - p['size'], py - p['size'], px + p['size'], py + p['size']], fill=p_col)
 
-    # 5. Technical Interface Metadata (Top corners HUD in JetBrains Mono)
+    # 5. Technical Interface Metadata
     if f_idx >= 5:
         hud_alpha = min(130, int((f_idx - 5) * 12))
         hud_lines_left = [
@@ -199,14 +200,14 @@ def render_frame(f_idx):
     sub2_x = (WIDTH - sub2_w) // 2
     sub2_y = sub1_y + sub1_h + gap2
 
-    # --- Line 1: HIMESH MEHTA (Space Grotesk 54px, #F5F7FA, tracking: -1px) ---
+    # --- Line 1: HIMESH MEHTA (Space Grotesk Bold 54px) ---
     if f_idx >= 18:
         name_prog = min(1.0, (f_idx - 18) / 16.0)
         is_glitching = (18 <= f_idx <= 24 and f_idx % 2 == 0)
         disp_x = random.randint(-2, 2) if is_glitching else 0
         disp_y = random.randint(-1, 1) if is_glitching else 0
 
-        # Draw Near-White Space Grotesk Title
+        # Draw Clean Bold Space Grotesk Title
         draw_spaced_text(draw, name_x + disp_x, name_y + disp_y, name_str, NAME_FONT, 
                          (245, 247, 250, int(255 * name_prog)), name_spacing)
 
@@ -217,14 +218,14 @@ def render_frame(f_idx):
             draw.line([(sweep_x - 6, name_y - 2), (sweep_x + 6, name_y + name_h + 4)], 
                       fill=(255, 255, 255, int(115 * math.sin(sweep_p * math.pi))), width=1)
 
-    # --- Line 2: BUILDING INTELLIGENT SYSTEMS (Inter Medium 19px, near-white) ---
+    # --- Line 2: BUILDING INTELLIGENT SYSTEMS (Inter Medium 19px) ---
     if f_idx >= 32:
         sub1_prog = min(1.0, (f_idx - 32) / 14.0)
         y_offset = int((1.0 - sub1_prog) * 6)
         draw_spaced_text(draw, sub1_x, sub1_y + y_offset, sub1_str, SUB1_FONT, 
                          (235, 240, 248, int(245 * sub1_prog)), sub1_spacing)
 
-    # --- Line 3: AI / ML · FULL STACK · AGENTIC SYSTEMS (JetBrains Mono 12px, muted cyan/blue-gray) ---
+    # --- Line 3: AI / ML · FULL STACK · AGENTIC SYSTEMS (JetBrains Mono 12px) ---
     if f_idx >= 42:
         sub2_prog = min(1.0, (f_idx - 42) / 14.0)
         y_offset = int((1.0 - sub2_prog) * 5)
@@ -263,7 +264,7 @@ def render_frame(f_idx):
 
     return img.convert("RGB")
 
-print("Rendering high quality animation sequence hero-animated-v3.gif...")
+print("Rendering high quality animation sequence with verified static Space Grotesk Bold...")
 frames = []
 for i in range(TOTAL_FRAMES):
     frames.append(render_frame(i))
