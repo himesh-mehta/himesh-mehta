@@ -27,18 +27,48 @@
 
 ### 🚀 Featured Projects
 
-| Project | Description | Tech Stack |
-| :--- | :--- | :--- |
-| 🧠 **JARVIS AI** | Multimodal intelligent AI assistant | `Python` `LLMs` `RAG` `Agents` |
-| 💼 [**LeadPilot**](https://github.com/himesh-mehta/LeadPilot) | Full-featured lead management and CRM system for automated client pipelines | `TypeScript` `React` `Node.js` `PostgreSQL` |
-| 🛍️ [**StoreCore**](https://github.com/himesh-mehta/Store-core) | Core backend and business logic architecture for e-commerce stores | `Python` `FastAPI` `MongoDB` `Docker` |
+<table>
+  <thead>
+    <tr>
+      <th width="22%" align="left">Project</th>
+      <th width="54%" align="left">Description</th>
+      <th width="24%" align="left">Tech Stack</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>🧠 JARVIS AI</b></td>
+      <td>Multimodal intelligent AI assistant</td>
+      <td><code>Python</code> <code>LLMs</code> <code>RAG</code> <code>Agents</code></td>
+    </tr>
+    <tr>
+      <td><b>💼 <a href="https://github.com/himesh-mehta/LeadPilot" style="color: inherit; text-decoration: none;">LeadPilot</a></b></td>
+      <td>Full-featured lead management and CRM system for automated client pipelines</td>
+      <td><code>TypeScript</code> <code>React</code> <code>Node.js</code> <code>PostgreSQL</code></td>
+    </tr>
+    <tr>
+      <td><b>📦 <a href="https://github.com/himesh-mehta/Store-core" style="color: inherit; text-decoration: none;">StoreCore</a></b></td>
+      <td>Core backend and business logic architecture for e-commerce stores</td>
+      <td><code>Python</code> <code>FastAPI</code> <code>MongoDB</code> <code>Docker</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ### 🛠️ Tech Stack
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=ts,react,nextjs,nodejs,python,fastapi,mongodb,postgres,docker,git" alt="Tech Stack" />
+  <a href="https://www.typescriptlang.org/" title="TypeScript"><img src="https://skillicons.dev/icons?i=ts" height="38" alt="TypeScript" /></a>&nbsp;
+  <a href="https://react.dev/" title="React"><img src="https://skillicons.dev/icons?i=react" height="38" alt="React" /></a>&nbsp;
+  <a href="https://nextjs.org/" title="Next.js"><img src="https://skillicons.dev/icons?i=nextjs" height="38" alt="Next.js" /></a>&nbsp;
+  <a href="https://nodejs.org/" title="Node.js"><img src="https://skillicons.dev/icons?i=nodejs" height="38" alt="Node.js" /></a>&nbsp;
+  <a href="https://www.python.org/" title="Python"><img src="https://skillicons.dev/icons?i=python" height="38" alt="Python" /></a>&nbsp;
+  <a href="https://fastapi.tiangolo.com/" title="FastAPI"><img src="https://skillicons.dev/icons?i=fastapi" height="38" alt="FastAPI" /></a>&nbsp;
+  <a href="https://www.mongodb.com/" title="MongoDB"><img src="https://skillicons.dev/icons?i=mongodb" height="38" alt="MongoDB" /></a>&nbsp;
+  <a href="https://www.postgresql.org/" title="PostgreSQL"><img src="https://skillicons.dev/icons?i=postgres" height="38" alt="PostgreSQL" /></a>&nbsp;
+  <a href="https://www.docker.com/" title="Docker"><img src="https://skillicons.dev/icons?i=docker" height="38" alt="Docker" /></a>&nbsp;
+  <a href="https://git-scm.com/" title="Git"><img src="https://skillicons.dev/icons?i=git" height="38" alt="Git" /></a>
 </p>
 
 ---
