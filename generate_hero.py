@@ -7,16 +7,19 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH, HEIGHT = 1200, 350
 FPS = 15
 TOTAL_FRAMES = 90  # 6 seconds loop at 15 fps
-OUTPUT_PATH = "assets/hero-animated.gif"
+OUTPUT_PATH = "assets/hero-animated-v2.gif"
 
 # Ensure output directory
 os.makedirs("assets", exist_ok=True)
 
 def get_fonts():
-    # Crisp, readable, balanced typography sizes
-    name_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 46)
-    sub1_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 20)
-    sub2_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 16)
+    # Exact requested sizes:
+    # HIMESH MEHTA: 34–36 px
+    # BUILDING INTELLIGENT SYSTEMS: 15–17 px
+    # AI / ML · FULL STACK · AGENTIC SYSTEMS: 11–13 px
+    name_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 36)
+    sub1_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 16)
+    sub2_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 12)
     mono_font = ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 11)
     return name_font, sub1_font, sub2_font, mono_font
 
@@ -25,59 +28,59 @@ NAME_FONT, SUB1_FONT, SUB2_FONT, MONO_FONT = get_fonts()
 # Fixed seed for deterministic particle trajectories & nodes
 random.seed(42)
 
-# Generate Neural Network Nodes around left and right edges (Framing sides)
+# Generate Neural Network Nodes around left and right edges (Framing sides, leaving center 100% clean)
 LEFT_NODES = []
-for _ in range(12):
-    x = random.randint(35, 230)
+for _ in range(10):
+    x = random.randint(35, 200)
     y = random.randint(35, HEIGHT - 35)
     LEFT_NODES.append((x, y))
 
 RIGHT_NODES = []
-for _ in range(12):
-    x = random.randint(WIDTH - 230, WIDTH - 35)
+for _ in range(10):
+    x = random.randint(WIDTH - 200, WIDTH - 35)
     y = random.randint(35, HEIGHT - 35)
     RIGHT_NODES.append((x, y))
 
 # Floating Cyber Ambient Particles
 PARTICLES = []
-for _ in range(30):
+for _ in range(25):
     PARTICLES.append({
         'x': random.uniform(0, WIDTH),
         'y': random.uniform(0, HEIGHT),
-        'speed': random.uniform(0.3, 0.9),
-        'size': random.uniform(1.0, 2.0),
+        'speed': random.uniform(0.3, 0.8),
+        'size': random.uniform(1.0, 1.8),
         'angle': random.uniform(0, math.pi * 2),
         'cyan_bias': random.random()
     })
 
 # Circuit / Data Bus lines on top & bottom borders
 CIRCUIT_LINES = [
-    (50, 25, 180, 25, 200, 45, 340, 45),
-    (WIDTH - 50, 25, WIDTH - 180, 25, WIDTH - 200, 45, WIDTH - 340, 45),
-    (50, HEIGHT - 25, 160, HEIGHT - 25, 180, HEIGHT - 45, 300, HEIGHT - 45),
-    (WIDTH - 50, HEIGHT - 25, WIDTH - 160, HEIGHT - 25, WIDTH - 180, HEIGHT - 45, WIDTH - 300, HEIGHT - 45),
+    (50, 25, 180, 25, 200, 45, 300, 45),
+    (WIDTH - 50, 25, WIDTH - 180, 25, WIDTH - 200, 45, WIDTH - 300, 45),
+    (50, HEIGHT - 25, 160, HEIGHT - 25, 180, HEIGHT - 45, 280, HEIGHT - 45),
+    (WIDTH - 50, HEIGHT - 25, WIDTH - 160, HEIGHT - 25, WIDTH - 180, HEIGHT - 45, WIDTH - 280, HEIGHT - 45),
 ]
 
 def render_frame(f_idx):
-    # Pure dark background
+    # Pure dark cyber background - absolutely no background shape, oval, pill, or blob
     img = Image.new("RGBA", (WIDTH, HEIGHT), (6, 8, 15, 255))
     draw = ImageDraw.Draw(img)
 
     t = f_idx / TOTAL_FRAMES
 
-    # 1. Subtle Cyber Grid lines on side flanks only
-    grid_alpha = int(16 + 6 * math.sin(t * math.pi * 2))
+    # 1. Subtle Cyber Grid lines on far outer flanks only
+    grid_alpha = int(14 + 6 * math.sin(t * math.pi * 2))
     for gx in range(0, WIDTH + 60, 60):
-        if gx < 260 or gx > WIDTH - 260:
-            draw.line([(gx, 0), (gx, HEIGHT)], fill=(0, 180, 255, int(grid_alpha * 0.45)), width=1)
+        if gx < 220 or gx > WIDTH - 220:
+            draw.line([(gx, 0), (gx, HEIGHT)], fill=(0, 180, 255, int(grid_alpha * 0.4)), width=1)
     
     for gy in [40, 80, HEIGHT - 80, HEIGHT - 40]:
-        draw.line([(0, gy), (WIDTH, gy)], fill=(0, 140, 220, int(grid_alpha * 0.25)), width=1)
+        draw.line([(0, gy), (WIDTH, gy)], fill=(0, 140, 220, int(grid_alpha * 0.2)), width=1)
 
-    # 2. Draw Circuit / Data Bus traces with traveling packets
+    # 2. Draw Circuit / Data Bus traces with traveling micro-packets
     for seg in CIRCUIT_LINES:
         x1, y1, x2, y2, x3, y3, x4, y4 = seg
-        draw.line([(x1, y1), (x2, y2), (x3, y3), (x4, y4)], fill=(0, 180, 255, 40), width=1)
+        draw.line([(x1, y1), (x2, y2), (x3, y3), (x4, y4)], fill=(0, 180, 255, 35), width=1)
         pulse_pos = ((f_idx * 3.5) % 300) / 300.0
         if pulse_pos < 0.5:
             px = x1 + (x2 - x1) * (pulse_pos * 2)
@@ -90,10 +93,10 @@ def render_frame(f_idx):
             p_sub = (pulse_pos - 0.7) / 0.3
             px = x3 + (x4 - x3) * p_sub
             py = y3 + (y4 - y3) * p_sub
-        draw.ellipse([px - 1.5, py - 1.5, px + 1.5, py + 1.5], fill=(180, 240, 255, 180))
+        draw.ellipse([px - 1.2, py - 1.2, px + 1.2, py + 1.2], fill=(180, 240, 255, 180))
 
-    # 3. Neural Network Nodes on left & right flanks
-    all_nodes = [(LEFT_NODES, (35, 230)), (RIGHT_NODES, (WIDTH - 230, WIDTH - 35))]
+    # 3. Neural Network Nodes on left & right flanks (Framing edges)
+    all_nodes = [(LEFT_NODES, (35, 200)), (RIGHT_NODES, (WIDTH - 200, WIDTH - 35))]
     node_activate_prog = min(1.0, max(0.0, (f_idx - 10) / 25.0))
     if node_activate_prog > 0:
         for node_group, _ in all_nodes:
@@ -103,27 +106,27 @@ def render_frame(f_idx):
                         dist = math.hypot(n1[0] - n2[0], n1[1] - n2[1])
                         if dist < 80:
                             wave = math.sin((n1[0] + n1[1]) * 0.05 - f_idx * 0.15)
-                            alpha = int(min(255, max(0, (40 + 30 * wave) * node_activate_prog)))
+                            alpha = int(min(255, max(0, (35 + 25 * wave) * node_activate_prog)))
                             color = (0, 210, 255, alpha) if (i + j) % 3 != 0 else (160, 100, 255, alpha)
                             draw.line([n1, n2], fill=color, width=1)
                 
                 n_pulse = math.sin(f_idx * 0.2 + i)
-                n_rad = 1.8 + 0.6 * n_pulse
-                n_alpha = int(min(255, max(0, (120 + 60 * n_pulse) * node_activate_prog)))
+                n_rad = 1.5 + 0.5 * n_pulse
+                n_alpha = int(min(255, max(0, (110 + 50 * n_pulse) * node_activate_prog)))
                 draw.ellipse([n1[0] - n_rad, n1[1] - n_rad, n1[0] + n_rad, n1[1] + n_rad], 
                              fill=(200, 245, 255, n_alpha))
 
-    # 4. Floating Cyber Dust / Particles
+    # 4. Floating Cyber Ambient Micro Dust
     for p in PARTICLES:
         px = (p['x'] + math.cos(p['angle']) * f_idx * p['speed']) % WIDTH
         py = (p['y'] + math.sin(p['angle']) * f_idx * p['speed']) % HEIGHT
-        p_alpha = int(80 + 60 * math.sin(f_idx * 0.1 + p['x']))
+        p_alpha = int(70 + 50 * math.sin(f_idx * 0.1 + p['x']))
         p_col = (140, 230, 255, p_alpha) if p['cyan_bias'] > 0.4 else (190, 140, 255, p_alpha)
         draw.ellipse([px - p['size'], py - p['size'], px + p['size'], py + p['size']], fill=p_col)
 
     # 5. Technical Interface Metadata (Top corners HUD)
     if f_idx >= 5:
-        hud_alpha = min(170, int((f_idx - 5) * 15))
+        hud_alpha = min(160, int((f_idx - 5) * 15))
         hud_lines_left = [
             "SYS_CORE // 01.AI.NEURAL",
             "STATUS   // ONLINE · OPTIMIZED",
@@ -142,19 +145,20 @@ def render_frame(f_idx):
             tw = bbox[2] - bbox[0]
             draw.text((WIDTH - 35 - tw, 35 + idx * 14), line, font=MONO_FONT, fill=(170, 180, 240, int(hud_alpha * 0.85)))
 
-    # 6. TYPOGRAPHY ANIMATION & RENDERING (NO BLUE OVAL, CLEAN BACKGROUND)
+    # 6. TYPOGRAPHY ANIMATION & RENDERING
+    # Clean, perfectly centered, compact sizing with ample negative space
     
-    # --- Primary Title: "HIMESH MEHTA" ---
+    # --- Primary Title: "HIMESH MEHTA" (36px) ---
     name_str = "HIMESH MEHTA"
     bbox_name = draw.textbbox((0, 0), name_str, font=NAME_FONT)
     name_w = bbox_name[2] - bbox_name[0]
     name_h = bbox_name[3] - bbox_name[1]
     name_x = (WIDTH - name_w) // 2
-    name_y = 95
+    name_y = 115
 
     if f_idx >= 20:
         name_prog = min(1.0, (f_idx - 20) / 16.0)
-        is_glitching = (20 <= f_idx <= 28 and f_idx % 2 == 0)
+        is_glitching = (20 <= f_idx <= 26 and f_idx % 2 == 0)
         disp_x = random.randint(-2, 2) if is_glitching else 0
         disp_y = random.randint(-1, 1) if is_glitching else 0
 
@@ -164,38 +168,38 @@ def render_frame(f_idx):
         # Clean subtle light sweep across title
         if 32 <= f_idx <= 55:
             sweep_p = (f_idx - 32) / 23.0
-            sweep_x = name_x - 30 + int((name_w + 60) * sweep_p)
-            draw.line([(sweep_x - 6, name_y - 4), (sweep_x + 6, name_y + name_h + 6)], 
-                      fill=(255, 255, 255, int(140 * math.sin(sweep_p * math.pi))), width=2)
+            sweep_x = name_x - 20 + int((name_w + 40) * sweep_p)
+            draw.line([(sweep_x - 5, name_y - 3), (sweep_x + 5, name_y + name_h + 5)], 
+                      fill=(255, 255, 255, int(130 * math.sin(sweep_p * math.pi))), width=1)
 
-    # --- Subtitle 1: "BUILDING INTELLIGENT SYSTEMS" ---
+    # --- Subtitle 1: "BUILDING INTELLIGENT SYSTEMS" (16px) ---
     sub1_str = "BUILDING INTELLIGENT SYSTEMS"
     bbox_sub1 = draw.textbbox((0, 0), sub1_str, font=SUB1_FONT)
     sub1_w = bbox_sub1[2] - bbox_sub1[0]
     sub1_h = bbox_sub1[3] - bbox_sub1[1]
     sub1_x = (WIDTH - sub1_w) // 2
-    sub1_y = name_y + name_h + 20
+    sub1_y = name_y + name_h + 16
 
     if f_idx >= 34:
         sub1_prog = min(1.0, (f_idx - 34) / 14.0)
-        y_offset = int((1.0 - sub1_prog) * 8)
-        draw.text((sub1_x, sub1_y + y_offset), sub1_str, font=SUB1_FONT, fill=(255, 255, 255, int(255 * sub1_prog)))
+        y_offset = int((1.0 - sub1_prog) * 6)
+        draw.text((sub1_x, sub1_y + y_offset), sub1_str, font=SUB1_FONT, fill=(220, 230, 245, int(245 * sub1_prog)))
 
-    # --- Subtitle 2: "AI / ML · FULL STACK · AGENTIC SYSTEMS" ---
+    # --- Subtitle 2: "AI / ML · FULL STACK · AGENTIC SYSTEMS" (12px) ---
     sub2_str = "AI / ML · FULL STACK · AGENTIC SYSTEMS"
     bbox_sub2 = draw.textbbox((0, 0), sub2_str, font=SUB2_FONT)
     sub2_w = bbox_sub2[2] - bbox_sub2[0]
     sub2_x = (WIDTH - sub2_w) // 2
-    sub2_y = sub1_y + sub1_h + 14
+    sub2_y = sub1_y + sub1_h + 12
 
     if f_idx >= 44:
         sub2_prog = min(1.0, (f_idx - 44) / 14.0)
-        y_offset = int((1.0 - sub2_prog) * 6)
-        draw.text((sub2_x, sub2_y + y_offset), sub2_str, font=SUB2_FONT, fill=(255, 255, 255, int(255 * sub2_prog)))
+        y_offset = int((1.0 - sub2_prog) * 5)
+        draw.text((sub2_x, sub2_y + y_offset), sub2_str, font=SUB2_FONT, fill=(160, 180, 210, int(220 * sub2_prog)))
 
     # 7. Corner Cyber Brackets
-    bracket_len = 28
-    bracket_alpha = min(170, int(f_idx * 7))
+    bracket_len = 25
+    bracket_alpha = min(150, int(f_idx * 6))
     b_col = (0, 190, 255, bracket_alpha)
     draw.line([(20, 20), (20 + bracket_len, 20)], fill=b_col, width=2)
     draw.line([(20, 20), (20, 20 + bracket_len)], fill=b_col, width=2)
@@ -207,9 +211,9 @@ def render_frame(f_idx):
     draw.line([(WIDTH - 20, HEIGHT - 20), (WIDTH - 20, HEIGHT - 20 - bracket_len)], fill=b_col, width=2)
 
     # 8. Bottom Progress Line
-    draw.line([(0, HEIGHT - 2), (WIDTH, HEIGHT - 2)], fill=(0, 170, 255, 70), width=2)
+    draw.line([(0, HEIGHT - 2), (WIDTH, HEIGHT - 2)], fill=(0, 170, 255, 60), width=2)
     scan_dot_x = int((f_idx / TOTAL_FRAMES) * WIDTH)
-    draw.line([(scan_dot_x - 20, HEIGHT - 2), (scan_dot_x + 20, HEIGHT - 2)], fill=(255, 255, 255, 220), width=2)
+    draw.line([(scan_dot_x - 15, HEIGHT - 2), (scan_dot_x + 15, HEIGHT - 2)], fill=(255, 255, 255, 200), width=2)
 
     # 9. Seamless Loop Fade
     if f_idx >= 80:
@@ -225,18 +229,19 @@ def render_frame(f_idx):
 
     return img.convert("RGB")
 
-print("Rendering high quality animation sequence with reduced text size and clean background...")
+print("Rendering high quality animation sequence hero-animated-v2.gif...")
 frames = []
 for i in range(TOTAL_FRAMES):
     frames.append(render_frame(i))
 
-print("Exporting optimized GIF...")
-frames[0].save(
-    OUTPUT_PATH,
-    save_all=True,
-    append_images=frames[1:],
-    duration=int(1000 / FPS),
-    loop=0,
-    optimize=False
-)
-print(f"Successfully generated hero animation GIF at {OUTPUT_PATH}")
+print("Exporting optimized GIF to hero-animated-v2.gif and hero-animated.gif...")
+for path in ["assets/hero-animated-v2.gif", "assets/hero-animated.gif"]:
+    frames[0].save(
+        path,
+        save_all=True,
+        append_images=frames[1:],
+        duration=int(1000 / FPS),
+        loop=0,
+        optimize=False
+    )
+    print(f"Successfully generated at {path}")
