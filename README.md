@@ -1,11 +1,39 @@
-- 👋 Hi, I’m @himesh-mehta
-- 👀 I’m interested in web development
-- 🌱 I’m currently learning python 
-- 📫 How to reach me dm on instagram or telegram
-- 😄 Pronouns: He/Him
+Himesh Mehta
+────────────────────────────
 
+Computer Science Student · AI/ML · Full Stack Developer
 
-<!---
-himesh-mehta/himesh-mehta is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+I build AI-powered applications, developer tools,
+and full-stack products.
+
+Currently working on:
+→ AI agents
+→ Geospatial / Earth observation AI
+→ Full-stack applications
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 Featured Projects
+
+JARVIS AI
+Multimodal AI assistant
+
+TerraChange
+AI-powered Earth observation platform
+
+TradePro
+Modern trading analytics platform
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ Tech
+
+TypeScript · React · Next.js · Node.js
+Python · FastAPI · MongoDB · PostgreSQL
+AI/ML · LLMs · RAG · Agents
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 Connect
+
+LinkedIn · X · Portfolio
