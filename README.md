@@ -31,7 +31,7 @@
 | :--- | :--- | :--- |
 | 🧠 **JARVIS AI** | Multimodal intelligent AI assistant | `Python` `LLMs` `RAG` `Agents` |
 | 💼 [**LeadPilot**](https://github.com/himesh-mehta/LeadPilot) | Full-featured lead management and CRM system for automated client pipelines | `TypeScript` `React` `Node.js` `PostgreSQL` |
-| 🛍️ [**Store-core**](https://github.com/himesh-mehta/Store-core) | Core backend and business logic architecture for e-commerce stores | `Python` `FastAPI` `MongoDB` `Docker` |
+| 🛍️ [**StoreCore**](https://github.com/himesh-mehta/Store-core) | Core backend and business logic architecture for e-commerce stores | `Python` `FastAPI` `MongoDB` `Docker` |
 
 ---
 
