@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/hero-banner.png" alt="Himesh Mehta Banner" width="100%" />
+  <img src="assets/hero-animated.gif" alt="Himesh Mehta Animated Hero" width="100%" />
 </div>
 
 <br/>
@@ -30,7 +30,7 @@
 | Project | Description | Tech Stack |
 | :--- | :--- | :--- |
 | 🧠 **JARVIS AI** | Multimodal intelligent AI assistant | `Python` `LLMs` `RAG` `Agents` |
-| 💼 [**lead-management-crm**](https://github.com/himesh-mehta/lead-management-crm) | Full-featured lead management and CRM system for automated client pipelines | `TypeScript` `React` `Node.js` `PostgreSQL` |
+| 💼 [**LeadPilot**](https://github.com/himesh-mehta/LeadPilot) | Full-featured lead management and CRM system for automated client pipelines | `TypeScript` `React` `Node.js` `PostgreSQL` |
 | 🛍️ [**Store-core**](https://github.com/himesh-mehta/Store-core) | Core backend and business logic architecture for e-commerce stores | `Python` `FastAPI` `MongoDB` `Docker` |
 
 ---
