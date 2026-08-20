@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/hero-animated-v2.gif" alt="Himesh Mehta Animated Hero" width="100%" />
+  <img src="assets/hero-animated-v3.gif" alt="Himesh Mehta Animated Hero" width="100%" />
 </div>
 
 <br/>
